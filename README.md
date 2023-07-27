@@ -4,15 +4,16 @@
 - [Using FlashIAP](#using-flashiap)
 - [Contents](#contents)
 - [Introduction](#introduction)
-	- [What is FlashIAP?](#what-is-flashiap)
-	- [Understanding the Flash Memory](#understanding-the-flash-memory)
-		- [Writing to Flash](#writing-to-flash)
+  - [What is FlashIAP?](#what-is-flashiap)
+  - [Understanding the Flash Memory](#understanding-the-flash-memory)
+    - [Writing to Flash](#writing-to-flash)
 - [Code](#code)
-	- [Erasing Pages](#erasing-pages)
-		- [Checking the Erase Function](#checking-the-erase-function)
-	- [Write](#write)
-		- [Checking the Write Function](#checking-the-write-function)
-	- [Read](#read)
+  - [Erasing Pages](#erasing-pages)
+    - [Checking the Erase Function](#checking-the-erase-function)
+  - [Write](#write)
+    - [Checking the Write Function](#checking-the-write-function)
+  - [Read](#read)
+    - [Checking the Read Function](#checking-the-read-function)
 
 
 # Introduction
@@ -47,6 +48,10 @@ When you want to program some data to any flash memory we must first erase the p
 The last thing to mention is that this board has a read width of 64 bits, this means that we must write 64 bits at a time. This is important to remember when we are writing our code.
 
 # Code
+
+When creating a project you can either create your own and follow along or import this using the instructions found [here](https://github.com/QUB-ARM-STM32/User-Guide/tree/master/KeilStudioCloud#importing-a-project).
+
+It is recommended that you at least complete the [Serial Output](https://github.com/QUB-ARM-STM32/Serial-Output) tutorial before attempting this one.
 
 ## Erasing Pages
 
@@ -215,3 +220,46 @@ Now we can check the memory location again using STM32CubeProgrammer.
 
 ## Read
 
+Reading data from the flash is very simple, we simply need to read the data from the correct memory location using a pointer.
+
+We will define a function to read the data.
+
+```cpp
+void ReadData(uint32_t address, uint64_t* buff, int numberBytes)
+{
+
+}
+```
+
+- address: the address in memory to read from
+- buff: a pointer to a buffer to store the read data in
+- numberBytes: the number of bytes to read
+
+We can simple loop through all the bytes we want to read and store them in the buffer.
+
+```cpp
+void ReadData(uint32_t address, uint64_t* buff, int numberBytes)
+{
+    while (numberBytes > 0)
+    {
+        *buff = *(uint64_t*)address;
+        buff++;
+        address += 8;
+        numberBytes -= 8;
+    }
+}
+```
+
+### Checking the Read Function
+
+With data having been programmed to the flash we can now check that our read function works correctly.
+
+```cpp
+    char* readData = (char*)malloc(sizeof(char) * dataLength);
+    ReadData((uint32_t)0x081FF000, (uint64_t*)readData, dataLength);
+    printf("Data: %s\r\n", readData);
+```
+
+We simply create a buffer to store the data in and pass it to the `ReadData` function. We can then print the data to the console.
+
+![Read Data](./Images/Output-Data.png)
